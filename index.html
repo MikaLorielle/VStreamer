@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="darkorchid" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>VStream</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #2e026d 0%, #d63384 100%);
+      background-attachment: fixed;
+      color: white;
+      font-family: sans-serif;
+    }
+    body.fade-in {
+      animation: fadeIn 1.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .frosted {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+    }
+    header.frosted {
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(15px);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .movie-card {
+    position: relative;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.1);
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    cursor: pointer;
+    }
+
+    .movie-card:hover {
+      transform: rotateX(6deg) translateY(-3px);
+      box-shadow: 0 30px 40px rgba(0,0,0,0.4);
+    }
+    .movie-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg) translateX(-100%);
+    pointer-events: none;
+    opacity: 0;
+    border-radius: 1rem;
+    transition: opacity 0.3s ease;
+    }
+
+    .movie-card:hover::before {
+    opacity: 1;
+    animation: shine 0.5s linear forwards;
+    }
+
+    @keyframes shine {
+    0% {
+        transform: rotate(25deg) translateX(-100%);
+    }
+    100% {
+        transform: rotate(25deg) translateX(100%);
+    }
+    }
+
+    .movie-card .placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      font-weight: bold;
+      color: rgba(255,255,255,0.1);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+    }
+    .movie-info {
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      border-bottom-left-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+    }
+    .movie-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    .movie-genre {
+      font-size: 0.875rem;
+      color: #f5c2e7;
+    }
+    main {
+      position: relative;
+      z-index: 10;
+    }
+    #snow-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100vw;
+      height: 100vh;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body class="fade-in">
+  <canvas id="snow-canvas"></canvas>
+
+  <header class="frosted rounded-b-xl">
+    <div class="flex items-center gap-4">
+      <img src="logo.png" alt="StreamVault Logo" class="w-10 h-10" />
+      <h1 class="text-2xl font-bold text-pink-400 select-none">VStream</h1>
+    </div>
+    <nav class="flex gap-4 text-pink-200 select-none">
+      <a href="#" class="hover:underline">Home</a>
+      <a href="#" class="hover:underline">Movies</a>
+      <a href="#" class="hover:underline">Series</a>
+      <a href="#" class="hover:underline">My List</a>
+    </nav>
+  </header>
+
+  <main class="p-8 max-w-7xl mx-auto">
+    <section class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-pink-200 select-none">Featured Movies</h2>
+      <p class="text-pink-100 mt-2 select-none">Handpicked just for you.</p>
+    </section>
+
+    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div class="movie-card">
+        <div class="placeholder">LH</div>
+        <div class="movie-info">
+          <div class="movie-title">The Last Horizon</div>
+          <div class="movie-genre">Sci-Fi / Adventure</div>
+        </div>
+      </div>
+      <div class="movie-card">
+        <div class="placeholder">CV</div>
+        <div class="movie-info">
+          <div class="movie-title">Crimson Vow</div>
+          <div class="movie-genre">Drama / Thriller</div>
+        </div>
+      </div>
+      <div class="movie-card">
+        <div class="placeholder">ND</div>
+        <div class="movie-info">
+          <div class="movie-title">Nebula Drift</div>
+          <div class="movie-genre">Action / Sci-Fi</div>
+        </div>
+      </div>
+      <div class="movie-card">
+        <div class="placeholder">ET</div>
+        <div class="movie-info">
+          <div class="movie-title">Echoes of Time</div>
+          <div class="movie-genre">Fantasy / Mystery</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Snowflake {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.radius = 1 + Math.random() * 2;
+        this.speed = 0.5 + Math.random() * 1.5;
+        this.wind = (Math.random() - 0.5) * 0.5;
+        this.opacity = 0.3 + Math.random() * 0.7;
+      }
+      update() {
+        this.y += this.speed;
+        this.x += this.wind;
+        if (this.y > height) this.reset();
+        if (this.x > width) this.x = 0;
+        if (this.x < 0) this.x = width;
+      }
+      draw() {
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+        gradient.addColorStop(0, `rgba(255,255,255,${this.opacity})`);
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = gradient;
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 150; i++) {
+      particles.push(new Snowflake());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
